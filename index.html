@@ -1,218 +1,102 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-title" content="TodoApp">
-  <title>Todo App</title>
-  <link rel="stylesheet" href="style.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo App - Master</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 </head>
-<body>
-<div class="app">
-  <aside class="sidebar" id="sidebar">
-    <div class="sidebar-top">
-      <div class="logo">⚔️ SHIN<span>DO</span></div>
-      <button class="close-sidebar" onclick="toggleSidebar()">✕</button>
-    </div>
-    <nav>
-      <button class="nav-btn actif" data-page="dashboard" onclick="showPage('dashboard',this)">📊 Dashboard</button>
-      <button class="nav-btn" data-page="taches" onclick="showPage('taches',this)">📋 Tâches</button>
-      <button class="nav-btn" data-page="semaine" onclick="showPage('semaine',this)">📅 Vue Semaine</button>
-      <button class="nav-btn" data-page="categories" onclick="showPage('categories',this)">🗂️ Catégories</button>
-      <button class="nav-btn" data-page="recurrentes" onclick="showPage('recurrentes',this)">🔁 Récurrentes</button>
-      <button class="nav-btn" data-page="rappels" onclick="showPage('rappels',this)">🔔 Rappels</button>
-      <button class="nav-btn" data-page="collab" onclick="showPage('collab',this)">🤝 Partage</button>
-    </nav>
-    <div class="sidebar-footer">
-      <button id="theme-btn" onclick="toggleTheme()">🌙 Thème sombre</button>
-    </div>
-  </aside>
-  <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
-  <div class="main-wrapper">
-    <header class="topbar">
-      <button class="burger" onclick="toggleSidebar()">☰</button>
-      <span class="topbar-title" id="topbar-title">Dashboard</span>
-      <div class="topbar-right">
-        <div id="notif-bell" class="bell" onclick="showPage('rappels',null)">🔔<span class="bell-badge" id="bell-badge" style="display:none"></span></div>
-      </div>
-    </header>
-    <main class="main">
-
-      <!-- DASHBOARD -->
-      <div id="page-dashboard" class="page active">
-        <div class="stats-grid">
-          <div class="stat-card"><div class="stat-val" id="s-total">0</div><div class="stat-lbl">Total</div></div>
-          <div class="stat-card green"><div class="stat-val" id="s-faites">0</div><div class="stat-lbl">Terminées</div></div>
-          <div class="stat-card orange"><div class="stat-val" id="s-actives">0</div><div class="stat-lbl">Actives</div></div>
-          <div class="stat-card red"><div class="stat-val" id="s-retard">0</div><div class="stat-lbl">En retard</div></div>
-        </div>
-        <div class="progress-section">
-          <div class="progress-label"><span>Progression globale</span><span id="progress-pct">0%</span></div>
-          <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
-        </div>
-        <div class="charts-grid">
-          <div class="chart-card"><div class="chart-title">Répartition</div><canvas id="chart-doughnut"></canvas></div>
-          <div class="chart-card"><div class="chart-title">Par priorité</div><canvas id="chart-bar"></canvas></div>
-        </div>
-        <div class="chart-card" style="margin-top:14px">
-          <div class="chart-title">Activité — 7 derniers jours</div>
-          <canvas id="chart-line"></canvas>
-        </div>
-      </div>
-
-      <!-- TACHES -->
-      <div id="page-taches" class="page">
-        <div class="input-card">
-          <div class="input-row">
-            <input type="text" id="new-task" placeholder="Nouvelle tâche..." />
-            <button onclick="ajouterTache()">+ Ajouter</button>
-          </div>
-          <div class="input-row-2">
-            <select id="priorite"><option value="normale">🟢 Normale</option><option value="haute">🔴 Haute</option><option value="basse">🔵 Basse</option></select>
-            <select id="categorie-select"><option value="">📁 Catégorie...</option></select>
-            <input type="date" id="echeance" />
-            <input type="time" id="heure-rappel" title="Heure rappel" />
-          </div>
-          <div class="input-row-2">
-            <input type="text" id="new-note" placeholder="📝 Note / commentaire..." style="flex:1" />
-            <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-muted);cursor:pointer">
-              <input type="checkbox" id="is-recurrente" style="width:16px;height:16px;accent-color:var(--accent)"> Récurrente
-            </label>
-            <select id="recurrence-type" style="display:none">
-              <option value="quotidien">Quotidien</option>
-              <option value="hebdo">Hebdomadaire</option>
-              <option value="mensuel">Mensuel</option>
-            </select>
-          </div>
-          <div class="search-row">
-            <input type="text" id="recherche" placeholder="🔍 Rechercher..." oninput="afficher(filtreActif())" />
-            <button class="btn-danger" onclick="supprimerTerminees()">🗑️ Vider terminées</button>
-          </div>
-        </div>
-        <div class="filtres-bar">
-          <button class="actif" data-filtre="toutes" onclick="setFiltre(this)">Toutes</button>
-          <button data-filtre="actives" onclick="setFiltre(this)">Actives</button>
-          <button data-filtre="terminees" onclick="setFiltre(this)">✅ Faites</button>
-          <button data-filtre="haute" onclick="setFiltre(this)">🔴 Urgentes</button>
-          <button data-filtre="retard" onclick="setFiltre(this)">⚠️ Retard</button>
-        </div>
-        <div id="cat-filtre-bar" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px"></div>
-        <ul id="liste-taches"></ul>
-        <div class="compteur-bar"><span id="compteur"></span></div>
-      </div>
-
-      <!-- VUE SEMAINE -->
-      <div id="page-semaine" class="page">
-        <div class="semaine-nav">
-          <button onclick="changerSemaine(-1)">← Préc.</button>
-          <span id="semaine-label" style="font-family:'Cinzel',serif;color:var(--accent);font-size:14px"></span>
-          <button onclick="changerSemaine(1)">Suiv. →</button>
-        </div>
-        <div id="semaine-grid"></div>
-      </div>
-
-      <!-- CATEGORIES -->
-      <div id="page-categories" class="page">
-        <div class="input-card">
-          <div class="input-row">
-            <input type="text" id="new-cat-nom" placeholder="Nom de la catégorie..." />
-            <select id="new-cat-icon">
-              <option value="📚">📚 Études</option>
-              <option value="💻">💻 Code</option>
-              <option value="🎬">🎬 Contenu</option>
-              <option value="🏠">🏠 Ménage</option>
-              <option value="🎯">🎯 Projet</option>
-              <option value="👁️">👁️ Veille</option>
-              <option value="💪">💪 Sport</option>
-              <option value="🌱">🌱 Perso</option>
-            </select>
-            <select id="new-cat-couleur">
-              <option value="#8b5cf6">Violet</option>
-              <option value="#1D9E75">Vert</option>
-              <option value="#c9a84c">Or</option>
-              <option value="#06b6d4">Cyan</option>
-              <option value="#e24b4a">Rouge</option>
-              <option value="#f59e0b">Ambre</option>
-            </select>
-            <button onclick="ajouterCategorie()">+ Créer</button>
-          </div>
-        </div>
-        <div id="categories-list"></div>
-      </div>
-
-      <!-- RECURRENTES -->
-      <div id="page-recurrentes" class="page">
-        <div class="section-info">Les tâches récurrentes sont générées automatiquement chaque jour/semaine/mois.</div>
-        <div id="recurrentes-list"></div>
-      </div>
-
-      <!-- RAPPELS -->
-      <div id="page-rappels" class="page">
-        <p class="hint">Tâches avec date et heure de rappel définies.</p>
-        <div id="liste-rappels"></div>
-      </div>
-
-      <!-- COLLAB -->
-      <div id="page-collab" class="page">
-        <div class="collab-hero">
-          <div class="collab-icon">🤝</div>
-          <h2>Partage & Collaboration</h2>
-          <p>Exportez vos tâches pour les partager, ou importez celles d'un proche.</p>
-        </div>
-        <div class="collab-grid">
-          <div class="collab-card">
-            <div class="collab-card-title">📤 Exporter mes tâches</div>
-            <div class="collab-card-desc">Générez un code de partage ou téléchargez un fichier JSON.</div>
-            <button onclick="exporterTaches()" style="margin-top:10px;width:100%">Exporter JSON</button>
-            <button onclick="copierCode()" style="margin-top:8px;width:100%;background:rgba(139,92,246,.15);border-color:rgba(139,92,246,.3);color:var(--accent2)">📋 Copier le code</button>
-          </div>
-          <div class="collab-card">
-            <div class="collab-card-title">📥 Importer des tâches</div>
-            <div class="collab-card-desc">Collez un code de partage ou chargez un fichier JSON.</div>
-            <textarea id="import-code" placeholder="Collez le code ici..." style="width:100%;margin-top:10px;height:80px;background:var(--input-bg);border:.5px solid var(--border2);border-radius:10px;color:var(--text);padding:8px;font-size:13px;resize:none"></textarea>
-            <button onclick="importerCode()" style="margin-top:8px;width:100%">Importer</button>
-            <div style="margin-top:8px">
-              <input type="file" id="import-file" accept=".json" onchange="importerFichier()" style="display:none">
-              <button onclick="document.getElementById('import-file').click()" style="width:100%;background:rgba(6,182,212,.1);border-color:rgba(6,182,212,.3);color:var(--accent3)">📁 Charger fichier JSON</button>
+<body class="dark">
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="logo">✅ TodoApp</div>
+            <nav>
+                <button class="nav-btn actif" onclick="showPage('dashboard', this)">📊 Dashboard</button>
+                <button class="nav-btn" onclick="showPage('taches', this)">📋 Tâches</button>
+                <button class="nav-btn" onclick="showPage('semaine', this)">📅 Semaine</button>
+                <button class="nav-btn" onclick="showPage('categories', this)">📂 Catégories</button>
+                <button class="nav-btn" onclick="showPage('collab', this)">🤝 Collab</button>
+            </nav>
+            <div class="sidebar-footer">
+                <button id="theme-btn" onclick="toggleTheme()">☀️ Thème clair</button>
             </div>
-          </div>
-        </div>
-        <div id="collab-status" style="margin-top:1rem;font-size:13px;color:var(--text-muted);text-align:center"></div>
-      </div>
+        </aside>
 
-    </main>
-  </div>
-</div>
-<div id="modal-tache" class="modal-overlay" onclick="fermerModal(event)">
-  <div class="modal-card">
-    <div class="modal-header">
-      <span class="modal-title" id="modal-titre"></span>
-      <button class="modal-close" onclick="fermerModalBtn()">✕</button>
+        <main class="content">
+            <div id="page-dashboard" class="page actif">
+                <div class="dashboard-grid">
+                    <div class="stat-card blue">
+                        <div class="stat-val" id="s-total">0</div>
+                        <div class="stat-lbl">Total</div>
+                    </div>
+                    <div class="stat-card green">
+                        <div class="stat-val" id="s-faites">0</div>
+                        <div class="stat-lbl">Terminées</div>
+                    </div>
+                    <div class="stat-card orange">
+                        <div class="stat-val" id="s-actives">0</div>
+                        <div class="stat-lbl">Actives</div>
+                    </div>
+                    <div class="stat-card red">
+                        <div class="stat-val" id="s-retard">0</div>
+                        <div class="stat-lbl">En retard</div>
+                    </div>
+                </div>
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <canvas id="chart-doughnut"></canvas>
+                    </div>
+                    <div class="chart-card">
+                        <canvas id="chart-line"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div id="page-taches" class="page">
+                <div class="input-card">
+                    <div class="input-row">
+                        <input type="text" id="new-task" placeholder="Quelle est la prochaine étape ?" onkeypress="if(event.key==='Enter') ajouterTache()" />
+                        <select id="new-task-cat"></select>
+                        <button onclick="ajouterTache()">Ajouter</button>
+                    </div>
+                    <div class="input-row-2">
+                        <select id="priorite">
+                            <option value="basse">🔵 Basse</option>
+                            <option value="moyenne" selected>🟢 Moyenne</option>
+                            <option value="haute">🔴 Haute</option>
+                        </select>
+                        <input type="date" id="echeance" />
+                        <input type="time" id="heure-debut" title="Début" />
+                        <input type="time" id="heure-fin" title="Fin" />
+                    </div>
+                </div>
+
+                <div class="list-header">
+                    <div class="search-bar">
+                        <input type="text" id="recherche" placeholder="🔍 Rechercher..." oninput="afficher(filtreActif())" />
+                    </div>
+                    <div class="filtres-bar">
+                        <button class="actif" data-filtre="toutes" onclick="setFiltre(this)">Toutes</button>
+                        <button data-filtre="actives" onclick="setFiltre(this)">Actives</button>
+                        <button data-filtre="terminees" onclick="setFiltre(this)">Faites</button>
+                    </div>
+                </div>
+
+                <ul id="liste-taches"></ul>
+                <div class="compteur-bar"><span id="compteur"></span></div>
+            </div>
+
+            <div id="page-collab" class="page">
+                <div class="collab-card">
+                    <h3>🤝 Partage</h3>
+                    <p>Exportez vos données pour les sauvegarder ou les partager.</p>
+                    <button onclick="exporterJSON()">Exporter JSON</button>
+                </div>
+            </div>
+        </main>
     </div>
-    <div class="modal-body">
-      <div class="modal-section-label">📝 Note</div>
-      <textarea id="modal-note" placeholder="Ajouter une note..." rows="3"></textarea>
-      <div class="modal-section-label" style="margin-top:12px">✅ Sous-tâches</div>
-      <div id="modal-subtasks"></div>
-      <div class="input-row" style="margin-top:8px">
-        <input type="text" id="new-subtask" placeholder="Nouvelle sous-tâche..." />
-        <button onclick="ajouterSousTache()">+</button>
-      </div>
-      <div class="modal-section-label" style="margin-top:12px">📅 Reporter à</div>
-      <div class="input-row">
-        <input type="date" id="report-date" />
-        <button onclick="reporterTache()">Reporter</button>
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button onclick="sauvegarderModal()" style="flex:1">💾 Sauvegarder</button>
-      <button onclick="fermerModalBtn()" style="background:rgba(90,90,122,.2);border-color:var(--border2);color:var(--text-muted)">Annuler</button>
-    </div>
-  </div>
-</div>
-<div id="notif-toast" class="toast"></div>
-<script src="app.js"></script>
+    <div id="toast" class="toast"></div>
+    <script src="app.js"></script>
 </body>
 </html>
