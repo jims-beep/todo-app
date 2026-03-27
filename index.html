@@ -1,102 +1,328 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Todo App - Master</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="TodoApp">
+  <title>Todo App</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 </head>
-<body class="dark">
-    <div class="layout">
-        <aside class="sidebar">
-            <div class="logo">✅ TodoApp</div>
-            <nav>
-                <button class="nav-btn actif" onclick="showPage('dashboard', this)">📊 Dashboard</button>
-                <button class="nav-btn" onclick="showPage('taches', this)">📋 Tâches</button>
-                <button class="nav-btn" onclick="showPage('semaine', this)">📅 Semaine</button>
-                <button class="nav-btn" onclick="showPage('categories', this)">📂 Catégories</button>
-                <button class="nav-btn" onclick="showPage('collab', this)">🤝 Collab</button>
-            </nav>
-            <div class="sidebar-footer">
-                <button id="theme-btn" onclick="toggleTheme()">☀️ Thème clair</button>
-            </div>
-        </aside>
+<body>
+<div class="app">
 
-        <main class="content">
-            <div id="page-dashboard" class="page actif">
-                <div class="dashboard-grid">
-                    <div class="stat-card blue">
-                        <div class="stat-val" id="s-total">0</div>
-                        <div class="stat-lbl">Total</div>
-                    </div>
-                    <div class="stat-card green">
-                        <div class="stat-val" id="s-faites">0</div>
-                        <div class="stat-lbl">Terminées</div>
-                    </div>
-                    <div class="stat-card orange">
-                        <div class="stat-val" id="s-actives">0</div>
-                        <div class="stat-lbl">Actives</div>
-                    </div>
-                    <div class="stat-card red">
-                        <div class="stat-val" id="s-retard">0</div>
-                        <div class="stat-lbl">En retard</div>
-                    </div>
-                </div>
-                <div class="charts-grid">
-                    <div class="chart-card">
-                        <canvas id="chart-doughnut"></canvas>
-                    </div>
-                    <div class="chart-card">
-                        <canvas id="chart-line"></canvas>
-                    </div>
-                </div>
-            </div>
-
-            <div id="page-taches" class="page">
-                <div class="input-card">
-                    <div class="input-row">
-                        <input type="text" id="new-task" placeholder="Quelle est la prochaine étape ?" onkeypress="if(event.key==='Enter') ajouterTache()" />
-                        <select id="new-task-cat"></select>
-                        <button onclick="ajouterTache()">Ajouter</button>
-                    </div>
-                    <div class="input-row-2">
-                        <select id="priorite">
-                            <option value="basse">🔵 Basse</option>
-                            <option value="moyenne" selected>🟢 Moyenne</option>
-                            <option value="haute">🔴 Haute</option>
-                        </select>
-                        <input type="date" id="echeance" />
-                        <input type="time" id="heure-debut" title="Début" />
-                        <input type="time" id="heure-fin" title="Fin" />
-                    </div>
-                </div>
-
-                <div class="list-header">
-                    <div class="search-bar">
-                        <input type="text" id="recherche" placeholder="🔍 Rechercher..." oninput="afficher(filtreActif())" />
-                    </div>
-                    <div class="filtres-bar">
-                        <button class="actif" data-filtre="toutes" onclick="setFiltre(this)">Toutes</button>
-                        <button data-filtre="actives" onclick="setFiltre(this)">Actives</button>
-                        <button data-filtre="terminees" onclick="setFiltre(this)">Faites</button>
-                    </div>
-                </div>
-
-                <ul id="liste-taches"></ul>
-                <div class="compteur-bar"><span id="compteur"></span></div>
-            </div>
-
-            <div id="page-collab" class="page">
-                <div class="collab-card">
-                    <h3>🤝 Partage</h3>
-                    <p>Exportez vos données pour les sauvegarder ou les partager.</p>
-                    <button onclick="exporterJSON()">Exporter JSON</button>
-                </div>
-            </div>
-        </main>
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-top">
+      <div class="logo">⚔️ SHIN<span>DO</span></div>
+      <button class="close-sidebar" onclick="toggleSidebar()">✕</button>
     </div>
-    <div id="toast" class="toast"></div>
-    <script src="app.js"></script>
+    <nav>
+      <button class="nav-btn actif" data-page="dashboard" onclick="showPage('dashboard',this)">📊 Dashboard</button>
+      <button class="nav-btn" data-page="taches" onclick="showPage('taches',this)">📋 Tâches</button>
+      <button class="nav-btn" data-page="semaine" onclick="showPage('semaine',this)">📅 Vue Semaine</button>
+      <button class="nav-btn" data-page="categories" onclick="showPage('categories',this)">🗂️ Catégories</button>
+      <button class="nav-btn" data-page="recurrentes" onclick="showPage('recurrentes',this)">🔁 Récurrentes</button>
+      <button class="nav-btn" data-page="pomodoro" onclick="showPage('pomodoro',this)">🍅 Pomodoro</button>
+      <button class="nav-btn" data-page="rappels" onclick="showPage('rappels',this)">🔔 Rappels</button>
+      <button class="nav-btn" data-page="collab" onclick="showPage('collab',this)">🤝 Partage</button>
+    </nav>
+    <div class="sidebar-footer">
+      <button id="theme-btn" onclick="toggleTheme()">🌙 Thème sombre</button>
+    </div>
+  </aside>
+
+  <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+  <div class="main-wrapper">
+    <header class="topbar">
+      <button class="burger" onclick="toggleSidebar()">☰</button>
+      <span class="topbar-title" id="topbar-title">Dashboard</span>
+      <div class="topbar-right">
+        <div class="pomo-mini" id="pomo-mini" style="display:none" onclick="showPage('pomodoro',document.querySelector('[data-page=pomodoro]'))">
+          🍅 <span id="pomo-mini-time">25:00</span>
+        </div>
+        <div id="notif-bell" class="bell" onclick="showPage('rappels',null)">🔔<span class="bell-badge" id="bell-badge" style="display:none"></span></div>
+      </div>
+    </header>
+
+    <main class="main">
+
+      <!-- DASHBOARD -->
+      <div id="page-dashboard" class="page active">
+        <div class="stats-grid">
+          <div class="stat-card"><div class="stat-val" id="s-total">0</div><div class="stat-lbl">Total</div></div>
+          <div class="stat-card green"><div class="stat-val" id="s-faites">0</div><div class="stat-lbl">Terminées</div></div>
+          <div class="stat-card orange"><div class="stat-val" id="s-actives">0</div><div class="stat-lbl">Actives</div></div>
+          <div class="stat-card red"><div class="stat-val" id="s-retard">0</div><div class="stat-lbl">En retard</div></div>
+        </div>
+        <div class="progress-section">
+          <div class="progress-label"><span>Progression globale</span><span id="progress-pct">0%</span></div>
+          <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+        </div>
+        <div class="charts-grid">
+          <div class="chart-card"><div class="chart-title">Répartition</div><canvas id="chart-doughnut"></canvas></div>
+          <div class="chart-card"><div class="chart-title">Par priorité</div><canvas id="chart-bar"></canvas></div>
+        </div>
+        <div class="chart-card" style="margin-top:14px">
+          <div class="chart-title">Activité — 7 derniers jours</div>
+          <canvas id="chart-line"></canvas>
+        </div>
+      </div>
+
+      <!-- TACHES -->
+      <div id="page-taches" class="page">
+        <div class="input-card">
+          <div class="input-row">
+            <input type="text" id="new-task" placeholder="Nouvelle tâche..." />
+            <button onclick="ajouterTache()">+ Ajouter</button>
+          </div>
+          <div class="input-row-2">
+            <select id="priorite">
+              <option value="normale">🟢 Normale</option>
+              <option value="haute">🔴 Haute</option>
+              <option value="basse">🔵 Basse</option>
+            </select>
+            <select id="categorie-select"><option value="">📁 Catégorie...</option></select>
+            <input type="date" id="echeance" />
+            <input type="time" id="heure-rappel" title="Heure début" />
+            <input type="time" id="heure-fin" title="Heure fin (active le timer)" />
+          </div>
+          <div class="input-row-2">
+            <input type="text" id="new-note" placeholder="📝 Note / commentaire..." style="flex:1" />
+            <label class="recur-label">
+              <input type="checkbox" id="is-recurrente"> Récurrente
+            </label>
+            <select id="recurrence-type" style="display:none">
+              <option value="quotidien">Quotidien</option>
+              <option value="hebdo">Hebdomadaire</option>
+              <option value="mensuel">Mensuel</option>
+              <option value="personnalise">🎛️ Personnalisé</option>
+            </select>
+            <input type="number" id="recurrence-jours" placeholder="Nb jours" min="1" max="365" style="display:none;width:90px" />
+          </div>
+          <div class="search-row">
+            <input type="text" id="recherche" placeholder="🔍 Rechercher..." oninput="afficher(filtreActif())" />
+            <button class="btn-danger" onclick="supprimerTerminees()">🗑️ Vider terminées</button>
+          </div>
+        </div>
+        <div class="filtres-bar">
+          <button class="actif" data-filtre="toutes" onclick="setFiltre(this)">Toutes</button>
+          <button data-filtre="actives" onclick="setFiltre(this)">Actives</button>
+          <button data-filtre="terminees" onclick="setFiltre(this)">✅ Faites</button>
+          <button data-filtre="haute" onclick="setFiltre(this)">🔴 Urgentes</button>
+          <button data-filtre="retard" onclick="setFiltre(this)">⚠️ Retard</button>
+        </div>
+        <div id="cat-filtre-bar" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px"></div>
+        <ul id="liste-taches"></ul>
+        <div class="compteur-bar"><span id="compteur"></span></div>
+      </div>
+
+      <!-- VUE SEMAINE -->
+      <div id="page-semaine" class="page">
+        <div class="semaine-nav">
+          <button onclick="changerSemaine(-1)">← Préc.</button>
+          <span id="semaine-label"></span>
+          <button onclick="changerSemaine(1)">Suiv. →</button>
+        </div>
+        <div id="semaine-grid" class="semaine-grid"></div>
+      </div>
+
+      <!-- CATEGORIES -->
+      <div id="page-categories" class="page">
+        <div class="input-card">
+          <div class="input-row">
+            <input type="text" id="new-cat-nom" placeholder="Nom de la catégorie..." />
+            <select id="new-cat-icon">
+              <option value="📚">📚 Études</option>
+              <option value="💻">💻 Code</option>
+              <option value="🎬">🎬 Contenu</option>
+              <option value="🏠">🏠 Ménage</option>
+              <option value="🎯">🎯 Projet</option>
+              <option value="👁️">👁️ Veille</option>
+              <option value="💪">💪 Sport</option>
+              <option value="🌱">🌱 Perso</option>
+            </select>
+            <select id="new-cat-couleur">
+              <option value="#8b5cf6">Violet</option>
+              <option value="#1D9E75">Vert</option>
+              <option value="#c9a84c">Or</option>
+              <option value="#06b6d4">Cyan</option>
+              <option value="#e24b4a">Rouge</option>
+              <option value="#f59e0b">Ambre</option>
+            </select>
+            <button onclick="ajouterCategorie()">+ Créer</button>
+          </div>
+        </div>
+        <div id="categories-list"></div>
+      </div>
+
+      <!-- RECURRENTES -->
+      <div id="page-recurrentes" class="page">
+        <div class="section-info">Les tâches récurrentes sont générées automatiquement selon leur fréquence.</div>
+        <div id="recurrentes-list"></div>
+      </div>
+
+      <!-- POMODORO -->
+      <div id="page-pomodoro" class="page">
+        <div class="pomo-container">
+          <div class="pomo-header">
+            <div class="pomo-session-label" id="pomo-session-label">🍅 Session de travail</div>
+            <div class="pomo-count">Sessions aujourd'hui : <span id="pomo-count">0</span></div>
+          </div>
+
+          <div class="pomo-circle-wrap">
+            <svg class="pomo-svg" viewBox="0 0 200 200">
+              <circle class="pomo-track" cx="100" cy="100" r="88"/>
+              <circle class="pomo-progress" id="pomo-circle" cx="100" cy="100" r="88"
+                stroke-dasharray="553" stroke-dashoffset="0"/>
+            </svg>
+            <div class="pomo-center">
+              <div class="pomo-time" id="pomo-time">25:00</div>
+              <div class="pomo-label" id="pomo-label">Travail</div>
+            </div>
+          </div>
+
+          <div class="pomo-controls">
+            <button class="pomo-btn" onclick="pomoDemarrer()" id="pomo-start-btn">▶ Démarrer</button>
+            <button class="pomo-btn pomo-btn-sec" onclick="pomoPause()" id="pomo-pause-btn" style="display:none">⏸ Pause</button>
+            <button class="pomo-btn pomo-btn-danger" onclick="pomoStop()">⏹ Stop</button>
+          </div>
+
+          <div class="pomo-settings">
+            <div class="pomo-set-title">Réglages</div>
+            <div class="pomo-set-grid">
+              <div class="pomo-set-item">
+                <label>🍅 Travail (min)</label>
+                <input type="number" id="pomo-work" value="25" min="1" max="90" onchange="pomoUpdateSettings()"/>
+              </div>
+              <div class="pomo-set-item">
+                <label>☕ Pause courte</label>
+                <input type="number" id="pomo-short" value="5" min="1" max="30" onchange="pomoUpdateSettings()"/>
+              </div>
+              <div class="pomo-set-item">
+                <label>🌴 Pause longue</label>
+                <input type="number" id="pomo-long" value="15" min="5" max="60" onchange="pomoUpdateSettings()"/>
+              </div>
+              <div class="pomo-set-item">
+                <label>🔄 Sessions avant longue</label>
+                <input type="number" id="pomo-sessions" value="4" min="2" max="8" onchange="pomoUpdateSettings()"/>
+              </div>
+            </div>
+          </div>
+
+          <div class="pomo-tache-section">
+            <div class="pomo-set-title">Tâche liée à cette session</div>
+            <select id="pomo-tache-select" style="width:100%;margin-top:8px">
+              <option value="">— Aucune tâche liée —</option>
+            </select>
+          </div>
+
+          <div class="pomo-history">
+            <div class="pomo-set-title">Historique du jour</div>
+            <div id="pomo-history-list"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RAPPELS -->
+      <div id="page-rappels" class="page">
+        <p class="hint">Tâches avec date et heure de rappel définies.</p>
+        <div id="liste-rappels"></div>
+      </div>
+
+      <!-- COLLAB -->
+      <div id="page-collab" class="page">
+        <div class="collab-hero">
+          <div class="collab-icon">🤝</div>
+          <h2>Partage & Collaboration</h2>
+          <p>Exportez vos tâches ou importez celles d'un proche.</p>
+        </div>
+        <div class="collab-grid">
+          <div class="collab-card">
+            <div class="collab-card-title">📤 Exporter</div>
+            <div class="collab-card-desc">Téléchargez un fichier JSON ou copiez un code de partage.</div>
+            <button onclick="exporterTaches()" style="margin-top:10px;width:100%">Exporter JSON</button>
+            <button onclick="copierCode()" style="margin-top:8px;width:100%;background:rgba(139,92,246,.15);border-color:rgba(139,92,246,.3);color:var(--accent2)">📋 Copier le code</button>
+          </div>
+          <div class="collab-card">
+            <div class="collab-card-title">📥 Importer</div>
+            <div class="collab-card-desc">Collez un code ou chargez un fichier JSON.</div>
+            <textarea id="import-code" placeholder="Collez le code ici..."></textarea>
+            <button onclick="importerCode()" style="margin-top:8px;width:100%">Importer le code</button>
+            <input type="file" id="import-file" accept=".json" onchange="importerFichier()" style="display:none">
+            <button onclick="document.getElementById('import-file').click()" style="margin-top:8px;width:100%;background:rgba(6,182,212,.1);border-color:rgba(6,182,212,.3);color:var(--accent3)">📁 Charger fichier</button>
+          </div>
+        </div>
+        <div id="collab-status"></div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- MODAL TACHE -->
+<div id="modal-tache" class="modal-overlay" onclick="fermerModal(event)">
+  <div class="modal-card">
+    <div class="modal-header">
+      <span class="modal-title" id="modal-titre"></span>
+      <button class="modal-close" onclick="fermerModalBtn()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-section-label">📝 Note</div>
+      <textarea id="modal-note" placeholder="Ajouter une note..." rows="3"></textarea>
+      <div class="modal-section-label" style="margin-top:14px">✅ Sous-tâches</div>
+      <div id="modal-subtasks"></div>
+      <div class="input-row" style="margin-top:8px">
+        <input type="text" id="new-subtask" placeholder="Nouvelle sous-tâche..." />
+        <button onclick="ajouterSousTache()">+</button>
+      </div>
+      <div class="modal-section-label" style="margin-top:14px">⏱ Timer de session</div>
+      <div class="input-row">
+        <input type="time" id="modal-heure-debut" placeholder="Début" />
+        <input type="time" id="modal-heure-fin" placeholder="Fin" />
+        <button onclick="demarrerTimerModal()">▶ Lancer</button>
+      </div>
+      <div class="modal-section-label" style="margin-top:14px">📅 Reporter à</div>
+      <div class="input-row">
+        <input type="date" id="report-date" />
+        <button onclick="reporterTache()">Reporter</button>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button onclick="sauvegarderModal()">💾 Sauvegarder</button>
+      <button onclick="fermerModalBtn()" class="btn-sec">Annuler</button>
+    </div>
+  </div>
+</div>
+
+<!-- TIMER FLOTTANT -->
+<div id="timer-floating" class="timer-floating" style="display:none">
+  <div class="timer-floating-title" id="timer-ftitle">⏱ Session</div>
+  <div class="timer-floating-time" id="timer-ftime">00:00:00</div>
+  <div class="timer-floating-bar"><div class="timer-floating-fill" id="timer-fbar"></div></div>
+  <div class="timer-floating-sub" id="timer-fsub">Temps restant</div>
+  <div class="timer-floating-btns">
+    <button onclick="pauseTimer()" id="timer-pause-btn">⏸ Pause</button>
+    <button onclick="stopTimer()" class="btn-danger">⏹ Stop</button>
+  </div>
+</div>
+
+<!-- CHRONOMETRE FLOTTANT -->
+<div id="chrono-floating" class="timer-floating chrono-floating" style="display:none">
+  <div class="timer-floating-title">⏱ Chronomètre</div>
+  <div class="timer-floating-time" id="chrono-time">00:00:00</div>
+  <div class="chrono-laps" id="chrono-laps"></div>
+  <div class="timer-floating-btns">
+    <button onclick="chronoPause()" id="chrono-pause-btn">⏸ Pause</button>
+    <button onclick="chronoLap()">🏁 Tour</button>
+    <button onclick="chronoStop()" class="btn-danger">⏹ Stop</button>
+  </div>
+</div>
+
+<div id="notif-toast" class="toast"></div>
+<script src="app.js"></script>
 </body>
 </html>
