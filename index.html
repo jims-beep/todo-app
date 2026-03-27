@@ -2,106 +2,135 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="TodoApp">
   <title>Todo App</title>
   <link rel="stylesheet" href="style.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 </head>
 <body>
-  <div class="layout">
+  <div class="app">
 
     <!-- SIDEBAR -->
-    <aside class="sidebar">
-      <div class="logo">✅ TodoApp</div>
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-top">
+        <div class="logo">✅ TodoApp</div>
+        <button class="close-sidebar" onclick="toggleSidebar()">✕</button>
+      </div>
       <nav>
-        <button class="nav-btn actif" onclick="showPage('dashboard')">📊 Dashboard</button>
-        <button class="nav-btn" onclick="showPage('taches')">📋 Tâches</button>
-        <button class="nav-btn" onclick="showPage('rappels')">🔔 Rappels</button>
+        <button class="nav-btn actif" data-page="dashboard" onclick="showPage('dashboard', this)">📊 Dashboard</button>
+        <button class="nav-btn" data-page="taches" onclick="showPage('taches', this)">📋 Tâches</button>
+        <button class="nav-btn" data-page="rappels" onclick="showPage('rappels', this)">🔔 Rappels</button>
       </nav>
       <div class="sidebar-footer">
         <button id="theme-btn" onclick="toggleTheme()">🌙 Thème sombre</button>
       </div>
     </aside>
 
+    <!-- OVERLAY mobile -->
+    <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+
     <!-- MAIN -->
-    <main class="main">
+    <div class="main-wrapper">
+      <header class="topbar">
+        <button class="burger" onclick="toggleSidebar()">☰</button>
+        <span class="topbar-title" id="topbar-title">Dashboard</span>
+        <div id="notif-bell" class="bell" onclick="showPage('rappels', null)">🔔<span class="bell-badge" id="bell-badge" style="display:none"></span></div>
+      </header>
 
-      <!-- PAGE DASHBOARD -->
-      <div id="page-dashboard" class="page active">
-        <h2>Dashboard</h2>
-        <div class="stats-grid">
-          <div class="stat-card">
-            <div class="stat-val" id="s-total">0</div>
-            <div class="stat-lbl">Total</div>
-          </div>
-          <div class="stat-card green">
-            <div class="stat-val" id="s-faites">0</div>
-            <div class="stat-lbl">Terminées</div>
-          </div>
-          <div class="stat-card orange">
-            <div class="stat-val" id="s-actives">0</div>
-            <div class="stat-lbl">Actives</div>
-          </div>
-          <div class="stat-card red">
-            <div class="stat-val" id="s-retard">0</div>
-            <div class="stat-lbl">En retard</div>
-          </div>
-        </div>
-        <div class="charts-grid">
-          <div class="chart-card">
-            <div class="chart-title">Répartition des tâches</div>
-            <canvas id="chart-doughnut" height="220"></canvas>
-          </div>
-          <div class="chart-card">
-            <div class="chart-title">Tâches par priorité</div>
-            <canvas id="chart-bar" height="220"></canvas>
-          </div>
-        </div>
-        <div class="chart-card" style="margin-top:16px;">
-          <div class="chart-title">Activité des 7 derniers jours</div>
-          <canvas id="chart-line" height="120"></canvas>
-        </div>
-      </div>
+      <main class="main">
 
-      <!-- PAGE TACHES -->
-      <div id="page-taches" class="page">
-        <h2>Mes tâches</h2>
-        <div class="input-row">
-          <input type="text" id="new-task" placeholder="Nouvelle tâche..." />
-          <select id="priorite">
-            <option value="normale">Normale</option>
-            <option value="haute">🔴 Haute</option>
-            <option value="basse">🔵 Basse</option>
-          </select>
-          <input type="date" id="echeance" />
-          <input type="time" id="heure-rappel" title="Heure de rappel" />
-          <button onclick="ajouterTache()">+ Ajouter</button>
+        <!-- DASHBOARD -->
+        <div id="page-dashboard" class="page active">
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-val" id="s-total">0</div>
+              <div class="stat-lbl">Total</div>
+            </div>
+            <div class="stat-card green">
+              <div class="stat-val" id="s-faites">0</div>
+              <div class="stat-lbl">Terminées</div>
+            </div>
+            <div class="stat-card orange">
+              <div class="stat-val" id="s-actives">0</div>
+              <div class="stat-lbl">Actives</div>
+            </div>
+            <div class="stat-card red">
+              <div class="stat-val" id="s-retard">0</div>
+              <div class="stat-lbl">En retard</div>
+            </div>
+          </div>
+          <div class="progress-section">
+            <div class="progress-label">
+              <span>Progression globale</span>
+              <span id="progress-pct">0%</span>
+            </div>
+            <div class="progress-track">
+              <div class="progress-fill" id="progress-fill"></div>
+            </div>
+          </div>
+          <div class="charts-grid">
+            <div class="chart-card">
+              <div class="chart-title">Répartition</div>
+              <canvas id="chart-doughnut"></canvas>
+            </div>
+            <div class="chart-card">
+              <div class="chart-title">Par priorité</div>
+              <canvas id="chart-bar"></canvas>
+            </div>
+          </div>
+          <div class="chart-card" style="margin-top:14px">
+            <div class="chart-title">Activité — 7 derniers jours</div>
+            <canvas id="chart-line"></canvas>
+          </div>
         </div>
-        <div class="search-row">
-          <input type="text" id="recherche" placeholder="🔍 Rechercher..." oninput="afficher(filtreActif())" />
-          <button class="btn-danger" onclick="supprimerTerminees()">🗑️ Vider terminées</button>
-        </div>
-        <ul id="liste-taches"></ul>
-        <div class="footer">
-          <span id="compteur"></span>
-          <div class="filtres">
+
+        <!-- TACHES -->
+        <div id="page-taches" class="page">
+          <div class="input-card">
+            <div class="input-row">
+              <input type="text" id="new-task" placeholder="Nouvelle tâche..." />
+              <button onclick="ajouterTache()">+ Ajouter</button>
+            </div>
+            <div class="input-row-2">
+              <select id="priorite">
+                <option value="normale">🟢 Normale</option>
+                <option value="haute">🔴 Haute</option>
+                <option value="basse">🔵 Basse</option>
+              </select>
+              <input type="date" id="echeance" />
+              <input type="time" id="heure-rappel" title="Heure rappel" />
+            </div>
+            <div class="search-row">
+              <input type="text" id="recherche" placeholder="🔍 Rechercher..." oninput="afficher(filtreActif())" />
+              <button class="btn-danger" onclick="supprimerTerminees()">🗑️ Vider terminées</button>
+            </div>
+          </div>
+
+          <div class="filtres-bar">
             <button class="actif" data-filtre="toutes" onclick="setFiltre(this)">Toutes</button>
             <button data-filtre="actives" onclick="setFiltre(this)">Actives</button>
-            <button data-filtre="terminees" onclick="setFiltre(this)">Terminées</button>
+            <button data-filtre="terminees" onclick="setFiltre(this)">✅ Faites</button>
             <button data-filtre="haute" onclick="setFiltre(this)">🔴 Urgentes</button>
             <button data-filtre="retard" onclick="setFiltre(this)">⚠️ Retard</button>
           </div>
+
+          <ul id="liste-taches"></ul>
+          <div class="compteur-bar">
+            <span id="compteur"></span>
+          </div>
         </div>
-      </div>
 
-      <!-- PAGE RAPPELS -->
-      <div id="page-rappels" class="page">
-        <h2>🔔 Rappels actifs</h2>
-        <p class="hint">Les rappels s'affichent ici pour les tâches avec une date et une heure définies. Autorisez les notifications si demandé.</p>
-        <div id="liste-rappels"></div>
-      </div>
+        <!-- RAPPELS -->
+        <div id="page-rappels" class="page">
+          <p class="hint">Tâches avec date et heure de rappel définies.</p>
+          <div id="liste-rappels"></div>
+        </div>
 
-    </main>
+      </main>
+    </div>
   </div>
 
   <div id="notif-toast" class="toast"></div>
