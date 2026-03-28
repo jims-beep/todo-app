@@ -10,6 +10,8 @@ let categories = JSON.parse(localStorage.getItem('categories')) || [
   { id:'cat-5', nom:'Veille',   icon:'👁️', couleur:'#f59e0b' },
 ];
 let theme = localStorage.getItem('theme') || 'dark';
+// Appliquer le thème immédiatement avant tout rendu
+document.body.classList.toggle('dark', theme === 'dark');
 let pomoHistory = JSON.parse(localStorage.getItem('pomo-history')) || [];
 let charts = {};
 let modalTacheId = null;
@@ -19,7 +21,6 @@ let catFiltreActif = null;
 // ============================================================
 // INIT
 // ============================================================
-if (theme === 'dark') document.body.classList.add('dark');
 updateThemeBtn();
 if ('Notification' in window) Notification.requestPermission();
 majCategoriesSelect();
@@ -521,23 +522,50 @@ function pomoUpdateSettings() {
 }
 function pomoDemarrer() {
   if (pomoState.running) return;
+  const s = pomoGetSettings();
+
   if (pomoState.paused) {
+    // Reprendre depuis pause
     pomoState.paused = false;
+    pomoState.running = true;
     document.getElementById('pomo-start-btn').style.display = 'none';
     document.getElementById('pomo-pause-btn').style.display = 'inline-flex';
     pomoState.interval = setInterval(pomoTick, 1000);
+    showToast('▶ Session reprise !');
     return;
   }
-  const s = pomoGetSettings();
-  pomoState.running = true; pomoState.paused = false;
-  pomoState.timeLeft  = (pomoState.mode === 'work' ? s.work : pomoState.mode === 'short' ? s.short : s.long) * 60;
-  pomoState.totalTime = pomoState.timeLeft;
+
+  // Nouveau départ — compte à rebours de 3 secondes
+  const duree = (pomoState.mode === 'work' ? s.work : pomoState.mode === 'short' ? s.short : s.long) * 60;
+  pomoState.timeLeft  = duree;
+  pomoState.totalTime = duree;
   document.getElementById('pomo-start-btn').style.display = 'none';
-  document.getElementById('pomo-pause-btn').style.display = 'inline-flex';
-  pomoState.interval = setInterval(pomoTick, 1000);
-  playSound('add');
-  // Mini topbar
+  document.getElementById('pomo-pause-btn').style.display = 'none';
   document.getElementById('pomo-mini').style.display = 'flex';
+
+  // Compte à rebours 3..2..1..GO
+  let countdown = 3;
+  document.getElementById('pomo-time').textContent = countdown + '...';
+  document.getElementById('pomo-label').textContent = 'Préparez-vous !';
+  const circle = document.getElementById('pomo-circle');
+  circle.style.stroke = '#888';
+
+  const countInterval = setInterval(() => {
+    countdown--;
+    if (countdown > 0) {
+      document.getElementById('pomo-time').textContent = countdown + '...';
+      playSound('add');
+    } else {
+      clearInterval(countInterval);
+      // Lancer le vrai timer
+      pomoState.running = true; pomoState.paused = false;
+      document.getElementById('pomo-pause-btn').style.display = 'inline-flex';
+      pomoState.interval = setInterval(pomoTick, 1000);
+      pomoRenderDisplay();
+      playSound('notif');
+      showToast('🍅 C\'est parti !');
+    }
+  }, 1000);
 }
 function pomoPause() {
   clearInterval(pomoState.interval);
@@ -803,7 +831,13 @@ function majDashboard() {
   majChartDoughnut(faites, actives, retard);
   majChartBar(); majChartLine();
 }
-function gc() { return { text:'#a0aec0', grid:'rgba(255,255,255,0.05)' }; }
+function gc() {
+  const dark = theme === 'dark';
+  return {
+    text: dark ? '#a0aec0' : '#555577',
+    grid: dark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.06)'
+  };
+}
 function majChartDoughnut(f,a,r) {
   const ctx = document.getElementById('chart-doughnut').getContext('2d'), c = gc();
   if (charts.doughnut) charts.doughnut.destroy();
@@ -866,9 +900,12 @@ function importerFichier() {
 // THÈME
 // ============================================================
 function toggleTheme() {
-  document.body.classList.toggle('dark');
-  theme = document.body.classList.contains('dark') ? 'dark' : 'light';
-  localStorage.setItem('theme', theme); updateThemeBtn(); majDashboard();
+  theme = theme === 'dark' ? 'light' : 'dark';
+  document.body.classList.toggle('dark', theme === 'dark');
+  localStorage.setItem('theme', theme);
+  updateThemeBtn();
+  // Recréer les charts avec les bonnes couleurs
+  setTimeout(majDashboard, 50);
 }
 function updateThemeBtn() {
   const btn = document.getElementById('theme-btn');
