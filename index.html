@@ -13,21 +13,20 @@
 <body>
 <div class="app">
 
-  <!-- SIDEBAR -->
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-top">
       <div class="logo">⚔️ SHIN<span>DO</span></div>
       <button class="close-sidebar" onclick="toggleSidebar()">✕</button>
     </div>
     <nav>
-      <button class="nav-btn actif" data-page="dashboard" onclick="showPage('dashboard',this)">📊 Dashboard</button>
-      <button class="nav-btn" data-page="taches" onclick="showPage('taches',this)">📋 Tâches</button>
-      <button class="nav-btn" data-page="semaine" onclick="showPage('semaine',this)">📅 Vue Semaine</button>
-      <button class="nav-btn" data-page="categories" onclick="showPage('categories',this)">🗂️ Catégories</button>
-      <button class="nav-btn" data-page="recurrentes" onclick="showPage('recurrentes',this)">🔁 Récurrentes</button>
-      <button class="nav-btn" data-page="pomodoro" onclick="showPage('pomodoro',this)">🍅 Pomodoro</button>
-      <button class="nav-btn" data-page="rappels" onclick="showPage('rappels',this)">🔔 Rappels</button>
-      <button class="nav-btn" data-page="collab" onclick="showPage('collab',this)">🤝 Partage</button>
+      <button class="nav-btn actif" data-page="dashboard"   onclick="showPage('dashboard',this)">📊 Dashboard</button>
+      <button class="nav-btn"       data-page="taches"      onclick="showPage('taches',this)">📋 Tâches</button>
+      <button class="nav-btn"       data-page="semaine"     onclick="showPage('semaine',this)">📅 Vue Semaine</button>
+      <button class="nav-btn"       data-page="categories"  onclick="showPage('categories',this)">🗂️ Catégories</button>
+      <button class="nav-btn"       data-page="recurrentes" onclick="showPage('recurrentes',this)">🔁 Récurrentes</button>
+      <button class="nav-btn"       data-page="pomodoro"    onclick="showPage('pomodoro',this)">🍅 Pomodoro</button>
+      <button class="nav-btn"       data-page="rappels"     onclick="showPage('rappels',this)">🔔 Rappels</button>
+      <button class="nav-btn"       data-page="collab"      onclick="showPage('collab',this)">🤝 Partage</button>
     </nav>
     <div class="sidebar-footer">
       <button id="theme-btn" onclick="toggleTheme()">🌙 Thème sombre</button>
@@ -41,22 +40,25 @@
       <button class="burger" onclick="toggleSidebar()">☰</button>
       <span class="topbar-title" id="topbar-title">Dashboard</span>
       <div class="topbar-right">
-        <div class="pomo-mini" id="pomo-mini" style="display:none" onclick="showPage('pomodoro',document.querySelector('[data-page=pomodoro]'))">
+        <div class="pomo-mini" id="pomo-mini" style="display:none"
+          onclick="showPage('pomodoro',document.querySelector('[data-page=pomodoro]'))">
           🍅 <span id="pomo-mini-time">25:00</span>
         </div>
-        <div id="notif-bell" class="bell" onclick="showPage('rappels',null)">🔔<span class="bell-badge" id="bell-badge" style="display:none"></span></div>
+        <div class="bell" onclick="showPage('rappels',null)">
+          🔔<span class="bell-badge" id="bell-badge" style="display:none"></span>
+        </div>
       </div>
     </header>
 
     <main class="main">
 
-      <!-- DASHBOARD -->
+      <!-- ===== DASHBOARD ===== -->
       <div id="page-dashboard" class="page active">
         <div class="stats-grid">
-          <div class="stat-card"><div class="stat-val" id="s-total">0</div><div class="stat-lbl">Total</div></div>
-          <div class="stat-card green"><div class="stat-val" id="s-faites">0</div><div class="stat-lbl">Terminées</div></div>
-          <div class="stat-card orange"><div class="stat-val" id="s-actives">0</div><div class="stat-lbl">Actives</div></div>
-          <div class="stat-card red"><div class="stat-val" id="s-retard">0</div><div class="stat-lbl">En retard</div></div>
+          <div class="stat-card">          <div class="stat-val" id="s-total">0</div>  <div class="stat-lbl">Total</div></div>
+          <div class="stat-card green">    <div class="stat-val" id="s-faites">0</div> <div class="stat-lbl">Terminées</div></div>
+          <div class="stat-card orange">   <div class="stat-val" id="s-actives">0</div><div class="stat-lbl">Actives</div></div>
+          <div class="stat-card red">      <div class="stat-val" id="s-retard">0</div> <div class="stat-lbl">En retard</div></div>
         </div>
         <div class="progress-section">
           <div class="progress-label"><span>Progression globale</span><span id="progress-pct">0%</span></div>
@@ -72,7 +74,7 @@
         </div>
       </div>
 
-      <!-- TACHES -->
+      <!-- ===== TACHES ===== -->
       <div id="page-taches" class="page">
         <div class="input-card">
           <div class="input-row">
@@ -87,40 +89,68 @@
             </select>
             <select id="categorie-select"><option value="">📁 Catégorie...</option></select>
             <input type="date" id="echeance" />
-            <input type="time" id="heure-rappel" title="Heure début" />
-            <input type="time" id="heure-fin" title="Heure fin (active le timer)" />
+            <input type="time" id="heure-rappel" title="Heure début / rappel" />
+            <input type="time" id="heure-fin"    title="Heure fin (active le timer)" />
           </div>
           <div class="input-row-2">
             <input type="text" id="new-note" placeholder="📝 Note / commentaire..." style="flex:1" />
             <label class="recur-label">
               <input type="checkbox" id="is-recurrente"> Récurrente
             </label>
-            <select id="recurrence-type" style="display:none">
-              <option value="quotidien">Quotidien</option>
-              <option value="hebdo">Hebdomadaire</option>
-              <option value="mensuel">Mensuel</option>
-              <option value="personnalise">🎛️ Personnalisé</option>
-            </select>
-            <input type="number" id="recurrence-jours" placeholder="Nb jours" min="1" max="365" style="display:none;width:90px" />
           </div>
+
+          <!-- Bloc récurrence (caché par défaut) -->
+          <div id="recur-bloc" style="display:none">
+            <div class="recur-type-row">
+              <button class="recur-type-btn actif" data-type="quotidien"    onclick="setRecurType('quotidien',this)">📅 Quotidien</button>
+              <button class="recur-type-btn"       data-type="hebdo"        onclick="setRecurType('hebdo',this)">📆 Hebdo</button>
+              <button class="recur-type-btn"       data-type="mensuel"      onclick="setRecurType('mensuel',this)">🗓️ Mensuel</button>
+              <button class="recur-type-btn"       data-type="personnalise" onclick="setRecurType('personnalise',this)">🎛️ Perso</button>
+            </div>
+
+            <!-- Jours de la semaine — visible pour hebdo ET personnalisé -->
+            <div id="recur-jours-bloc" style="display:none">
+              <div class="recur-jours-label">Jours de répétition :</div>
+              <div class="recur-jours-grid">
+                <label class="jour-check"><input type="checkbox" value="1"> Lun</label>
+                <label class="jour-check"><input type="checkbox" value="2"> Mar</label>
+                <label class="jour-check"><input type="checkbox" value="3"> Mer</label>
+                <label class="jour-check"><input type="checkbox" value="4"> Jeu</label>
+                <label class="jour-check"><input type="checkbox" value="5"> Ven</label>
+                <label class="jour-check"><input type="checkbox" value="6"> Sam</label>
+                <label class="jour-check"><input type="checkbox" value="0"> Dim</label>
+              </div>
+            </div>
+
+            <!-- Intervalle custom — visible uniquement pour personnalisé -->
+            <div id="recur-intervalle-bloc" style="display:none">
+              <div class="recur-jours-label">Répéter tous les :</div>
+              <div class="input-row-2" style="margin-top:6px">
+                <input type="number" id="recurrence-jours" placeholder="Nb jours" min="1" max="365" style="width:110px" />
+                <span style="font-size:13px;color:var(--text-muted);align-self:center">jours</span>
+              </div>
+            </div>
+          </div>
+
           <div class="search-row">
             <input type="text" id="recherche" placeholder="🔍 Rechercher..." oninput="afficher(filtreActif())" />
             <button class="btn-danger" onclick="supprimerTerminees()">🗑️ Vider terminées</button>
           </div>
         </div>
+
         <div class="filtres-bar">
-          <button class="actif" data-filtre="toutes" onclick="setFiltre(this)">Toutes</button>
-          <button data-filtre="actives" onclick="setFiltre(this)">Actives</button>
-          <button data-filtre="terminees" onclick="setFiltre(this)">✅ Faites</button>
-          <button data-filtre="haute" onclick="setFiltre(this)">🔴 Urgentes</button>
-          <button data-filtre="retard" onclick="setFiltre(this)">⚠️ Retard</button>
+          <button class="actif" data-filtre="toutes"    onclick="setFiltre(this)">Toutes</button>
+          <button               data-filtre="actives"   onclick="setFiltre(this)">Actives</button>
+          <button               data-filtre="terminees" onclick="setFiltre(this)">✅ Faites</button>
+          <button               data-filtre="haute"     onclick="setFiltre(this)">🔴 Urgentes</button>
+          <button               data-filtre="retard"    onclick="setFiltre(this)">⚠️ Retard</button>
         </div>
         <div id="cat-filtre-bar" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px"></div>
         <ul id="liste-taches"></ul>
         <div class="compteur-bar"><span id="compteur"></span></div>
       </div>
 
-      <!-- VUE SEMAINE -->
+      <!-- ===== VUE SEMAINE ===== -->
       <div id="page-semaine" class="page">
         <div class="semaine-nav">
           <button onclick="changerSemaine(-1)">← Préc.</button>
@@ -130,7 +160,7 @@
         <div id="semaine-grid" class="semaine-grid"></div>
       </div>
 
-      <!-- CATEGORIES -->
+      <!-- ===== CATEGORIES ===== -->
       <div id="page-categories" class="page">
         <div class="input-card">
           <div class="input-row">
@@ -159,67 +189,50 @@
         <div id="categories-list"></div>
       </div>
 
-      <!-- RECURRENTES -->
+      <!-- ===== RECURRENTES ===== -->
       <div id="page-recurrentes" class="page">
-        <div class="section-info">Les tâches récurrentes sont générées automatiquement selon leur fréquence.</div>
+        <div class="section-info">Tâches générées automatiquement selon leur fréquence. Modifiez ou supprimez ici.</div>
         <div id="recurrentes-list"></div>
       </div>
 
-      <!-- POMODORO -->
+      <!-- ===== POMODORO ===== -->
       <div id="page-pomodoro" class="page">
         <div class="pomo-container">
           <div class="pomo-header">
             <div class="pomo-session-label" id="pomo-session-label">🍅 Session de travail</div>
             <div class="pomo-count">Sessions aujourd'hui : <span id="pomo-count">0</span></div>
           </div>
-
           <div class="pomo-circle-wrap">
             <svg class="pomo-svg" viewBox="0 0 200 200">
-              <circle class="pomo-track" cx="100" cy="100" r="88"/>
-              <circle class="pomo-progress" id="pomo-circle" cx="100" cy="100" r="88"
-                stroke-dasharray="553" stroke-dashoffset="0"/>
+              <circle class="pomo-track"    cx="100" cy="100" r="88"/>
+              <circle class="pomo-progress" cx="100" cy="100" r="88" id="pomo-circle"
+                stroke-dasharray="553" stroke-dashoffset="553"/>
             </svg>
             <div class="pomo-center">
-              <div class="pomo-time" id="pomo-time">25:00</div>
+              <div class="pomo-time"  id="pomo-time">25:00</div>
               <div class="pomo-label" id="pomo-label">Travail</div>
             </div>
           </div>
-
           <div class="pomo-controls">
-            <button class="pomo-btn" onclick="pomoDemarrer()" id="pomo-start-btn">▶ Démarrer</button>
-            <button class="pomo-btn pomo-btn-sec" onclick="pomoPause()" id="pomo-pause-btn" style="display:none">⏸ Pause</button>
-            <button class="pomo-btn pomo-btn-danger" onclick="pomoStop()">⏹ Stop</button>
+            <button class="pomo-btn"             id="pomo-start-btn" onclick="pomoDemarrer()">▶ Démarrer</button>
+            <button class="pomo-btn pomo-btn-sec" id="pomo-pause-btn" onclick="pomoPause()" style="display:none">⏸ Pause</button>
+            <button class="pomo-btn pomo-btn-danger"                  onclick="pomoStop()">⏹ Stop</button>
           </div>
-
           <div class="pomo-settings">
             <div class="pomo-set-title">Réglages</div>
             <div class="pomo-set-grid">
-              <div class="pomo-set-item">
-                <label>🍅 Travail (min)</label>
-                <input type="number" id="pomo-work" value="25" min="1" max="90" onchange="pomoUpdateSettings()"/>
-              </div>
-              <div class="pomo-set-item">
-                <label>☕ Pause courte</label>
-                <input type="number" id="pomo-short" value="5" min="1" max="30" onchange="pomoUpdateSettings()"/>
-              </div>
-              <div class="pomo-set-item">
-                <label>🌴 Pause longue</label>
-                <input type="number" id="pomo-long" value="15" min="5" max="60" onchange="pomoUpdateSettings()"/>
-              </div>
-              <div class="pomo-set-item">
-                <label>🔄 Sessions avant longue</label>
-                <input type="number" id="pomo-sessions" value="4" min="2" max="8" onchange="pomoUpdateSettings()"/>
-              </div>
+              <div class="pomo-set-item"><label>🍅 Travail (min)</label>    <input type="number" id="pomo-work"     value="25" min="1"  max="90" onchange="pomoUpdateSettings()"/></div>
+              <div class="pomo-set-item"><label>☕ Pause courte</label>     <input type="number" id="pomo-short"    value="5"  min="1"  max="30" onchange="pomoUpdateSettings()"/></div>
+              <div class="pomo-set-item"><label>🌴 Pause longue</label>     <input type="number" id="pomo-long"     value="15" min="5"  max="60" onchange="pomoUpdateSettings()"/></div>
+              <div class="pomo-set-item"><label>🔄 Sessions / longue</label><input type="number" id="pomo-sessions" value="4"  min="2"  max="8"  onchange="pomoUpdateSettings()"/></div>
             </div>
           </div>
-
           <div class="pomo-tache-section">
             <div class="pomo-set-title">Tâche liée à cette session</div>
             <select id="pomo-tache-select" style="width:100%;margin-top:8px">
               <option value="">— Aucune tâche liée —</option>
             </select>
           </div>
-
           <div class="pomo-history">
             <div class="pomo-set-title">Historique du jour</div>
             <div id="pomo-history-list"></div>
@@ -227,13 +240,16 @@
         </div>
       </div>
 
-      <!-- RAPPELS -->
+      <!-- ===== RAPPELS ===== -->
       <div id="page-rappels" class="page">
-        <p class="hint">Tâches avec date et heure de rappel définies.</p>
+        <div class="rappels-header">
+          <p class="hint">Tâches avec date et heure de rappel. L'app envoie une notification système à l'heure exacte.</p>
+          <button onclick="demanderPermissionNotifs()" class="btn-notif-perm" id="btn-notif-perm">🔔 Activer les notifications</button>
+        </div>
         <div id="liste-rappels"></div>
       </div>
 
-      <!-- COLLAB -->
+      <!-- ===== COLLAB ===== -->
       <div id="page-collab" class="page">
         <div class="collab-hero">
           <div class="collab-icon">🤝</div>
@@ -263,7 +279,7 @@
   </div>
 </div>
 
-<!-- MODAL TACHE -->
+<!-- ===== MODAL TACHE ===== -->
 <div id="modal-tache" class="modal-overlay" onclick="fermerModal(event)">
   <div class="modal-card">
     <div class="modal-header">
@@ -281,8 +297,8 @@
       </div>
       <div class="modal-section-label" style="margin-top:14px">⏱ Timer de session</div>
       <div class="input-row">
-        <input type="time" id="modal-heure-debut" placeholder="Début" />
-        <input type="time" id="modal-heure-fin" placeholder="Fin" />
+        <input type="time" id="modal-heure-debut" />
+        <input type="time" id="modal-heure-fin"   />
         <button onclick="demarrerTimerModal()">▶ Lancer</button>
       </div>
       <div class="modal-section-label" style="margin-top:14px">📅 Reporter à</div>
@@ -298,19 +314,19 @@
   </div>
 </div>
 
-<!-- TIMER FLOTTANT -->
+<!-- ===== TIMER FLOTTANT ===== -->
 <div id="timer-floating" class="timer-floating" style="display:none">
   <div class="timer-floating-title" id="timer-ftitle">⏱ Session</div>
-  <div class="timer-floating-time" id="timer-ftime">00:00:00</div>
+  <div class="timer-floating-time"  id="timer-ftime">00:00:00</div>
   <div class="timer-floating-bar"><div class="timer-floating-fill" id="timer-fbar"></div></div>
-  <div class="timer-floating-sub" id="timer-fsub">Temps restant</div>
+  <div class="timer-floating-sub"   id="timer-fsub">Temps restant</div>
   <div class="timer-floating-btns">
     <button onclick="pauseTimer()" id="timer-pause-btn">⏸ Pause</button>
-    <button onclick="stopTimer()" class="btn-danger">⏹ Stop</button>
+    <button onclick="stopTimer()"  class="btn-danger">⏹ Stop</button>
   </div>
 </div>
 
-<!-- CHRONOMETRE FLOTTANT -->
+<!-- ===== CHRONO FLOTTANT ===== -->
 <div id="chrono-floating" class="timer-floating chrono-floating" style="display:none">
   <div class="timer-floating-title">⏱ Chronomètre</div>
   <div class="timer-floating-time" id="chrono-time">00:00:00</div>
